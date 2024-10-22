@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: BUSL-1.1
 
 ARG GO_VERSION=latest
+ARG TARGETARCH
 
 # builder for the dev image
 # -----------------------------------
 FROM golang:$GO_VERSION as dev-builder
 
 ARG GOOS=linux
-ARG GOARCH=amd64
 ENV BIN_NAME=vault-secrets-operator
 WORKDIR /workspace
 # Copy the Go Modules manifests
@@ -36,7 +36,7 @@ COPY vault/ vault/
 ARG LD_FLAGS
 
 # Build
-RUN CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "$LD_FLAGS" -a -o $BIN_NAME main.go
+RUN CGO_ENABLED=0 GOOS=$GOOS GOARCH=${TARGETARCH} go build -ldflags "$LD_FLAGS" -a -o $BIN_NAME main.go
 
 # setup scripts directory needed for upgrading CRDs.
 RUN mkdir scripts
